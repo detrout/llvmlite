@@ -289,12 +289,8 @@ LLVMPY_RunNewModulePassManager(LLVMModulePassManagerRef MPMRef,
 
     PrintPassOptions PrintPassOpts;
 
-#if LLVM_VERSION_MAJOR < 16
-    StandardInstrumentations SI(DebugLogging, VerifyEach, PrintPassOpts);
-#else
     StandardInstrumentations SI(M->getContext(), DebugLogging, VerifyEach,
                                 PrintPassOpts);
-#endif
     // https://reviews.llvm.org/D146160
     SI.registerCallbacks(*PB->getPassInstrumentationCallbacks(), &MAM);
 
@@ -348,12 +344,8 @@ LLVMPY_RunNewFunctionPassManager(LLVMFunctionPassManagerRef FPMRef,
     // TODO: Can expose this in ffi layer
     PrintPassOptions PrintPassOpts;
 
-#if LLVM_VERSION_MAJOR < 16
-    StandardInstrumentations SI(DebugLogging, VerifyEach, PrintPassOpts);
-#else
     StandardInstrumentations SI(F->getContext(), DebugLogging, VerifyEach,
                                 PrintPassOpts);
-#endif
     // https://reviews.llvm.org/D146160
     SI.registerCallbacks(*PB->getPassInstrumentationCallbacks(), &MAM);
 
@@ -422,16 +414,15 @@ LLVMPY_PTOSetLoopUnrolling(LLVMPipelineTuningOptionsRef PTO, bool value) {
     llvm::unwrap(PTO)->LoopUnrolling = value;
 }
 
-// FIXME: Available from llvm16
-// API_EXPORT(int)
-// LLVMPY_PTOGetInlinerThreshold(LLVMPipelineTuningOptionsRef PTO) {
-//     return llvm::unwrap(PTO)->InlinerThreshold;
-// }
+API_EXPORT(int)
+LLVMPY_PTOGetInlinerThreshold(LLVMPipelineTuningOptionsRef PTO) {
+    return llvm::unwrap(PTO)->InlinerThreshold;
+}
 
-// API_EXPORT(void)
-// LLVMPY_PTOSetInlinerThreshold(LLVMPipelineTuningOptionsRef PTO, bool value) {
-//     llvm::unwrap(PTO)->InlinerThreshold = value;
-// }
+API_EXPORT(void)
+LLVMPY_PTOSetInlinerThreshold(LLVMPipelineTuningOptionsRef PTO, bool value) {
+    llvm::unwrap(PTO)->InlinerThreshold = value;
+}
 
 API_EXPORT(void)
 LLVMPY_DisposePipelineTuningOptions(LLVMPipelineTuningOptionsRef PTO) {
@@ -446,11 +437,7 @@ LLVMPY_CreatePassBuilder(LLVMTargetMachineRef TM,
     TargetMachine *target = llvm::unwrap(TM);
     PipelineTuningOptions *pt = llvm::unwrap(PTO);
     PassInstrumentationCallbacks *PIC = new PassInstrumentationCallbacks();
-#if LLVM_VERSION_MAJOR < 16
-    return llvm::wrap(new PassBuilder(target, *pt, None, PIC));
-#else
     return llvm::wrap(new PassBuilder(target, *pt, std::nullopt, PIC));
-#endif
 }
 
 API_EXPORT(void)
