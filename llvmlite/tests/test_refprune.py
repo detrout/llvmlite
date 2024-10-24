@@ -1,4 +1,5 @@
 import unittest
+from collections import defaultdict
 from llvmlite import ir
 from llvmlite import binding as llvm
 from llvmlite.tests import TestCase
@@ -138,7 +139,11 @@ class TestRefPrunePass(TestCase, PassManagerMixin):
 
     def check(self, mod, expected, nodes):
         # preprocess incref/decref locations
-        d = {}
+
+        # LLVM >= 18 have been adds an extra empty block "LoopExit" which causes
+        # regular dict to throw KeyError
+        d = defaultdict(lambda: defaultdict(int))
+
         for k, vs in nodes.items():
             n_incref = vs.count('incref')
             n_decref = vs.count('decref')
@@ -153,6 +158,7 @@ class TestRefPrunePass(TestCase, PassManagerMixin):
         for f in mod.functions:
             if f.name == 'main':
                 break
+
         # check each BB
         for bb in f.blocks:
             stats = d[bb.name]
@@ -168,10 +174,9 @@ class TestRefPrunePass(TestCase, PassManagerMixin):
         outmod = self.apply_refprune(irmod)
         self.check(outmod, expected, nodes)
 
-    # FIXME: Tests/Refprune pass needs fixing for llvm18
     # Generate tests
-    # for name, case in _iterate_cases(generate_test):
-    #     locals()[name] = case
+    for name, case in _iterate_cases(generate_test):
+        locals()[name] = case
 
 class BaseTestByIR(TestCase, PassManagerMixin):
     refprune_bitmask = 0
