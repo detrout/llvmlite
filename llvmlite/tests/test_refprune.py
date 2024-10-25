@@ -178,6 +178,7 @@ class TestRefPrunePass(TestCase, PassManagerMixin):
     for name, case in _iterate_cases(generate_test):
         locals()[name] = case
 
+
 class BaseTestByIR(TestCase, PassManagerMixin):
     refprune_bitmask = 0
 
@@ -267,6 +268,7 @@ define void @main(ptr %ptr, ptr %other) {
         self.assertEqual(stats.basicblock, 4)
         # not pruned
         self.assertIn("call void @NRT_decref(ptr %other)", str(mod))
+
 
 class TestDiamond(BaseTestByIR):
     refprune_bitmask = llvm.RefPruneSubpasses.DIAMOND
@@ -436,6 +438,7 @@ bb_C:
         # pruner.
         mod, stats = self.check(self.fanout_3, subgraph_limit=1)
         self.assertEqual(stats.fanout, 0)
+
 
 class TestFanoutRaise(BaseTestByIR):
     refprune_bitmask = llvm.RefPruneSubpasses.FANOUT_RAISE
