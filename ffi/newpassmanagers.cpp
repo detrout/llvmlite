@@ -57,6 +57,7 @@
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/IRPrintingPasses.h"
 #include "llvm/IR/PassManager.h"
+#include <llvm/IR/PassTimingInfo.h>
 #include "llvm/IR/Verifier.h"
 #include "llvm/Passes/PassBuilder.h"
 #include "llvm/Passes/StandardInstrumentations.h"
@@ -562,6 +563,17 @@ const char *LLVMPY_getFunctionLevelPasses() {
 #include "PASSREGISTRY.def"
 
     return LLVMPY_CreateString(function_passes.c_str());
+
+API_EXPORT(void)
+LLVMPY_SetTimePasses(bool enable) { TimePassesIsEnabled = enable; }
+
+API_EXPORT(void)
+LLVMPY_ReportAndResetTimings(const char **outmsg) {
+    std::string osbuf;
+    raw_string_ostream os(osbuf);
+    reportAndResetTimings(&os);
+    os.flush();
+    *outmsg = LLVMPY_CreateString(os.str().c_str());
 }
 
 } // end extern "C"
