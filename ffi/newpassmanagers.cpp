@@ -563,6 +563,7 @@ const char *LLVMPY_getFunctionLevelPasses() {
 #include "PASSREGISTRY.def"
 
     return LLVMPY_CreateString(function_passes.c_str());
+}
 
 API_EXPORT(void)
 LLVMPY_SetTimePasses(bool enable) { TimePassesIsEnabled = enable; }
