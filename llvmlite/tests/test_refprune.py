@@ -8,9 +8,6 @@ import llvmlite.tests.refprune_proto as proto
 
 # TODO:: Get rid of Legacy tests once completely transitioned to NewPassManager
 
-# FIXME: Remove me once typed pointers are no longer supported.
-from llvmlite import opaque_pointers_enabled
-
 
 def _iterate_cases(generate_test):
     def wrap(fn):

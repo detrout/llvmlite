@@ -990,11 +990,6 @@ my_block:
         self.assertEqual(j.type, ir.VoidType())
         k = builder.load_atomic(c, ordering="seq_cst", align=4, name='k')
         self.assertEqual(k.type, int32)
-        if opaque_pointers_enabled:
-            ptr = ir.Constant(ir.PointerType(), None)
-        else:
-            ptr = ir.Constant(ir.PointerType(int32), None)
-        builder.store(ir.Constant(int32, 5), ptr)
         # Not pointer types
         with self.assertRaises(TypeError):
             builder.store(b, a)
