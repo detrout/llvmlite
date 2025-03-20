@@ -1489,12 +1489,12 @@ class TestOrcLLJIT(BaseTest):
         # An attempt to lookup a symbol in the current process (Py_GetVersion,
         # in this case) should fail with an appropriate error if we have not
         # enabled searching the current process for symbols.
-        msg = 'Failed to materialize symbols:.*getversion'
+        msg = 'Symbols not found: \[ Py_GetVersion \]'
         with self.assertRaisesRegex(RuntimeError, msg):
-            self.jit(asm_getversion, "getversion", suppress_errors=True)
+            self.jit(asm_getversion, "Py_GetVersion", suppress_errors=True)
 
     def test_lookup_current_process_symbol(self):
-        self.jit(asm_getversion, "getversion", None, True)
+        self.jit(asm_getversion, "Py_GetVersion", None, True)
 
     def test_thread_safe(self):
         lljit = llvm.create_lljit_compiler()
