@@ -2437,7 +2437,7 @@ class TestObjectFile(BaseTest):
         has_text = False
         last_address = -1
         for s in obj.sections():
-            if s.is_text():
+            if s.is_text() and s.name() == b".ltext":
                 has_text = True
                 self.assertIsNotNone(s.name())
                 self.assertTrue(s.size() > 0)
